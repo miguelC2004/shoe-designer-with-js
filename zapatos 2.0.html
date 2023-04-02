@@ -1,0 +1,162 @@
+<!DOCTYPE html lang= es>
+<html>
+<head>
+  <title>Dibuja tu dise&#241;o</title>
+  <style>
+    body {
+        background-color: #ca0058;
+      }
+
+      canvas {
+        border: 1px solid #ccc;
+        box-shadow: 3px 3px 3px #999;
+      }
+
+      button {
+        background: #eb94d0;
+        background-image: -webkit-linear-gradient(top, #eb94d0, #2079b0);
+        background-image: -moz-linear-gradient(top, #eb94d0, #2079b0);
+        background-image: -ms-linear-gradient(top, #eb94d0, #2079b0);
+        background-image: -o-linear-gradient(top, #eb94d0, #2079b0);
+        background-image: linear-gradient(to bottom, #eb94d0, #2079b0);
+        -webkit-border-radius: 28;
+        -moz-border-radius: 28;
+        border-radius: 28px;
+        text-shadow: 3px 2px 1px #9daef5;
+        -webkit-box-shadow: 6px 5px 24px #666666;
+        -moz-box-shadow: 6px 5px 24px #666666;
+        box-shadow: 6px 5px 24px #666666;
+        font-family: Arial;
+        color: #fafafa;
+        font-size: 27px;
+        padding: 19px;
+        text-decoration: none;
+        margin-right: 10px;
+      }
+
+      .button-container {
+        margin-bottom: 20px;
+      }
+
+      #canvas-container {
+        display: flex;
+        align-items: center;
+      }
+      
+      #brush-size-container {
+        margin-left: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      
+      .brush-size-value {
+        margin-bottom: 10px;
+      }
+      
+      .brush-size-input {
+        width: 200px;
+        height: 10px;
+        background: #ddd;
+        border-radius: 5px;
+        outline: none;
+        opacity: 0.7;
+        transition: opacity 0.2s;
+      }
+      
+      .brush-size-input::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #4caf50;
+        cursor: pointer;
+      }
+      
+      .brush-size-input::-moz-range-thumb {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: #4caf50;
+        cursor: pointer;
+      }
+      
+      
+  </style>
+</head>
+<body>
+    <div class="button-container">
+        <button onclick="selectPen()">Dibujar</button>
+        <button onclick="selectEraser()">Borrador</button>
+        <button onclick="clearCanvas()">Borrar todo</button>
+      </div>
+      <label for="brushSize">Brush Size:</label>
+      <input type="range" id="brushSize" min="5" max="50" value="5" onchange="updateBrushSize(this.value)">
+      <span id="brushSizeValue">5</span>
+      
+  <canvas id="lienzo" width="800" height="600"></canvas>
+  <script>
+    var canvas = document.getElementById('lienzo');
+    var ctx = canvas.getContext('2d');
+
+    var isDrawing = false;
+    var lastX = 0;
+    var lastY = 0;
+    var penSelected = true;
+    var brushSize = 5;
+
+    var img = new Image();
+    img.onload = function() {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    };
+    img.src = 'https://img.freepik.com/vector-premium/vector-pie-organos-humanos-diseno-digital-grafico-2d-hd-ilustracion_542240-36.jpg?w=2000';
+
+    function selectPen() {
+      penSelected = true;
+    }
+
+    function selectEraser() {
+      penSelected = false;
+    }
+
+    function clearCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    }
+
+    function updateBrushSize(value) {
+        brushSize = value;
+        ctx.lineWidth = brushSize;
+      }
+    canvas.addEventListener('mousedown', function(e) {
+      isDrawing = true;
+      lastX = e.clientX - canvas.offsetLeft;
+      lastY = e.clientY - canvas.offsetTop;
+    });
+
+    canvas.addEventListener('mousemove', function(e) {
+      if (isDrawing) {
+        var x = e.clientX - canvas.offsetLeft;
+        var y = e.clientY - canvas.offsetTop;
+        if (penSelected) {
+          ctx.beginPath();
+          ctx.moveTo(lastX, lastY);
+          ctx.lineTo(x, y);
+          ctx.strokeStyle = 'black';
+          ctx.lineWidth = brushSize;
+          ctx.stroke();
+        } else {
+          ctx.clearRect(x - brushSize/2, y - brushSize/2, brushSize, brushSize);
+        }
+        lastX = x;
+        lastY = y;
+      }
+    });
+
+    canvas.addEventListener('mouseup', function() {
+      isDrawing = false;
+    });
+  </script>
+</body>
+</html>
